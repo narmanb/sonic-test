@@ -1,5 +1,5 @@
-import {Game,LENGTH,START,LOOPS,loopAt,SPRING_GAPS,JUMP_GAPS,formatTime,clamp} from './core.mjs';
-import {World} from './world.mjs';
+import {Game,LENGTH,START,LOOPS,loopAt,SPRING_GAPS,JUMP_GAPS,formatTime,clamp} from './core.mjs?v=2';
+import {World} from './world.mjs?v=2';
 import {Sound} from './audio.mjs';
 const $=id=>document.getElementById(id), game=new Game(),sound=new Sound();
 let world, touchSteer=0,boostHeld=false,stickPointer=null,boostPointer=null,keys=new Set(),previousPad={},last=0,accumulator=0,noticeTimer=0,loopTimer=0,toast='',toastTimer=0,uiTimer=0;

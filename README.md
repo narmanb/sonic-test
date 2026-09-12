@@ -20,7 +20,9 @@ The game ships with its renderer and has no external runtime assets or CDN reque
 
 ## Validation
 
-Run `node tests/game-tests.mjs` for 13 gameplay checks, including course geometry, jumping, damage, homing, spring gaps, checkpoint recovery and complete runs at 30/60/120 simulation updates per second.
+Run `node tests/game-tests.mjs` for 20 gameplay checks, including course geometry, jumping, damage, homing, spring gaps, checkpoint recovery and complete runs at 30/60/120 simulation updates per second.
+
+Run `node tests/geometry-tests.mjs` to check separation of both loop ribbons, 3,024 camera-to-character samples against actual road triangles, rotation around the spin model’s center, and low-altitude robot/spring target projection. The renderer is stubbed in these tests; this is geometry validation rather than GPU visual testing.
 
 Additional local checks exercised real Three.js scene geometry and camera projection with a stub renderer, and UI events with a mock DOM. They covered mobile portrait/landscape framing, simultaneous touch controls, pointer cancellation, pause/resume, retry/restart, keyboard/gamepad routing, and optional page-tool validation. Those checks do not validate GPU output, actual touch hardware, browser WebMCP support or device frame rate. No browser visual QA or physical-device performance measurement has been performed.
 

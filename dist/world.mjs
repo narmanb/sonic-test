@@ -1,5 +1,5 @@
 import * as T from './three.module.min.js';
-import {LENGTH,START,HALF_WIDTH,LOOPS,loopAt,GAPS,JUMP_GAPS,CHECKPOINTS,frame,point,worldAt,isGap,isLoop,trackSpan,targetX,clamp} from './core.mjs';
+import {LENGTH,START,HALF_WIDTH,LOOPS,loopAt,GAPS,JUMP_GAPS,CHECKPOINTS,frame,point,worldAt,isGap,isLoop,trackSpan,targetX,clamp} from './core.mjs?v=2';
 const UP=new T.Vector3(0,1,0), V=(p)=>new T.Vector3(p.x,p.y,p.z);
 const palette={blue:0x0965e6,navy:0x064cb1,skin:0xf4c296,white:0xffffff,red:0xf33c3e,grass:0x70cd3a,grassDark:0x309655,sand:0xf6d68b,stone:0xc87e49,gold:0xffd12c};
 const materials=new Map();
