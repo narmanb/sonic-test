@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#073756">
+  <meta name="description" content="Race Sonic through Cobalt Coast: a 3D fan level with touch controls, rings, homing attacks, spring jumps and two seaside loops.">
+  <title>Sonic · Cobalt Coast</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230855bd'/%3E%3Ccircle cx='32' cy='32' r='19' fill='none' stroke='%23ffdc56' stroke-width='9'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="game" aria-label="Sonic Cobalt Coast game">
+    <canvas id="view" aria-label="3D game view"></canvas>
+    <div id="shade"></div>
+    <div class="topbar">
+      <div class="brand"><i class="ring-mark"></i><span>SONIC<span class="brand-slash"> / </span><b>COBALT COAST</b></span></div>
+      <div class="utilities">
+        <button id="sound" class="icon-button" aria-label="Mute sound" title="Sound"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM17 8c3 2 3 6 0 8M20 5c5 4 5 10 0 14"/></svg></button>
+        <button id="fullscreen" class="icon-button" aria-label="Enter fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button>
+        <button id="pause" class="icon-button hidden" aria-label="Pause game" title="Pause"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+      </div>
+    </div>
+    <section id="start-screen" class="screen start-screen">
+      <div class="start-card">
+        <div class="stage-tag"><span>STAGE 01</span> SEASIDE RUN</div>
+        <h1><span>SONIC</span><strong>COBALT<br>COAST</strong></h1>
+        <p class="intro">Chase the horizon.</p>
+        <p class="description">A sunlit sprint through floating islands,<br class="desktop-break"> soaring springs, and two sky-high loops.</p>
+        <button id="start" class="primary-button">LET’S RUN <span>▶</span></button>
+        <div class="quick-guide"><span><b>STEER</b> left thumb</span><span><b>JUMP / BOOST</b> right thumb</span></div>
+        <div class="keyboard-guide">Keyboard: A / D or ← / → · Space to jump · Shift to boost</div>
+      </div>
+      <div class="stage-stamp"><span>01</span><div>COASTLINE<br><b>2.8 KM</b></div></div>
+      <div class="start-footer"><span>An unofficial fan-made level demo</span><span class="landscape-note">↻ Best played in landscape</span></div>
+    </section>
+    <div id="hud" class="hidden">
+      <div class="stats">
+        <div class="ring-count"><i class="ring-mark"></i><span id="rings">000</span></div>
+        <div class="stat"><span>TIME</span><b id="time">00:00.00</b></div>
+        <div class="stat speed-stat"><span>SPEED</span><b><span id="speed">0</span><small>km/h</small></b></div>
+      </div>
+      <div class="course-progress"><div><span id="sector">PALM SHORES</span><b id="distance">0%</b></div><div class="progress-track"><i id="progress"></i><span></span><span></span></div></div>
+      <div id="callout" class="callout" aria-live="polite"></div>
+      <div id="target-lock" class="target-lock hidden" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="lock-shadow" cx="50" cy="50" r="29"/><circle class="lock-ring" cx="50" cy="50" r="29"/><path class="lock-brackets" d="M27 8H8v19m65-19h19v19M8 73v19h19m46 0h19V73"/><path class="lock-arrows" d="m44 2 6 12 6-12M2 44l12 6-12 6m96-12-12 6 12 6M44 98l6-12 6 12"/></svg><span id="target-label">ROBOT LOCK</span><b>TAP JUMP</b></div>
+      <div id="checkpoint-notice" class="checkpoint-notice">CHECKPOINT</div>
+      <div class="boost-gauge"><span>BOOST</span><div><i id="boost-fill"></i></div><b id="boost-value">100</b></div>
+      <div id="touch-controls" class="touch-controls">
+        <div id="joystick" class="joystick" role="group" aria-label="Steering control. Drag left or right."><span class="steer-chevron left">‹</span><span class="steer-chevron right">›</span><div id="stick" class="stick"></div><span class="steer-label">STEER</span></div>
+        <div class="action-controls"><button id="boost" class="boost-button" aria-label="Hold to boost. Release after the meter runs out."><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 10-13h-8z"/></svg><span>BOOST</span></button><button id="jump" class="jump-button" aria-label="Jump. Press again to home in on a locked robot or spring."><svg viewBox="0 0 24 24"><path d="m5 13 7-7 7 7M12 6v14"/></svg><span id="jump-label">JUMP</span></button></div>
+      </div>
+    </div>
+    <section id="pause-screen" class="screen modal-screen hidden" aria-label="Game paused">
+      <div class="menu-card"><div class="stage-tag">TAKE A BREATHER</div><h2>PAUSED</h2><button id="resume" class="primary-button">KEEP RUNNING <span>▶</span></button><button id="retry" class="secondary-button">Restart from checkpoint</button><button id="restart" class="text-button">Restart level</button><div class="menu-options"><span>Graphics</span><button id="quality">Balanced</button></div><p class="menu-help">Drag to steer. Hold BOOST; release when it empties. During a jump, tap JUMP again to home in on a locked robot or spring. Blue arrows mark jumps you need to make.<br><span>Gamepad: stick · A jump · X / RT boost · Start pause</span></p></div>
+    </section>
+    <section id="finish-screen" class="screen modal-screen hidden" aria-label="Level complete">
+      <div class="menu-card finish-card"><div class="stage-tag">COBALT COAST</div><h2>STAGE CLEAR!</h2><div class="rank"><span>RANK</span><strong id="rank">A</strong></div><div class="results"><div><span>TIME</span><b id="result-time"></b></div><div><span>RINGS</span><b id="result-rings"></b></div><div><span>ROBOTS</span><b id="result-robots"></b></div><div><span>RETRIES</span><b id="result-retries"></b></div></div><button id="replay" class="primary-button">ONE MORE RUN <span>↻</span></button></div>
+    </section>
+    <div id="loading"><i class="ring-mark"></i><span>Opening Cobalt Coast…</span></div>
+    <div id="error-screen" class="screen modal-screen hidden"><div class="menu-card"><h2>COULDN’T START</h2><p id="error-text">The 3D view could not start. Try opening this page in Chrome with graphics acceleration enabled.</p><button onclick="location.reload()" class="primary-button">TRY AGAIN</button></div></div>
+  </main>
+  <script type="module" src="./main.mjs"></script>
+</body>
+</html>
