@@ -26,6 +26,11 @@ func _ready() -> void:
 		start_world("island")
 	else:
 		show_title()
+	if "--touch" in args:
+		Game.settings["touch_mode"] = 1
+		Game.apply_settings()
+	if "--settings" in args and menu != null:
+		menu.open_settings()
 	for a in args:
 		if a.begins_with("--shot="):
 			_shots(a.trim_prefix("--shot="), args)
