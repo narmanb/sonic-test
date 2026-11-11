@@ -26,6 +26,32 @@ func _ready() -> void:
 		start_world("island")
 	else:
 		show_title()
+	for a in args:
+		if a.begins_with("--shot="):
+			_shots(a.trim_prefix("--shot="), args)
+
+## Dev helper: `--shot=dir [--at=x,y,z,yaw]...` saves screenshots and quits.
+func _shots(dir: String, args: Array) -> void:
+	var spots: Array = []
+	for a in args:
+		if a.begins_with("--at="):
+			spots.append(a.trim_prefix("--at=").split_floats(","))
+	if spots.is_empty():
+		spots.append(PackedFloat64Array())
+	var i := 0
+	for sp in spots:
+		if sp.size() >= 3 and Game.player != null:
+			Game.player.teleport(Vector3(sp[0], sp[1], sp[2]))
+			if sp.size() >= 4:
+				Game.camera.yaw = sp[3]
+			if sp.size() >= 5:
+				Game.camera.pitch = sp[4]
+			Game.camera.manual_t = 99.0
+		for f in 50:
+			await get_tree().process_frame
+		get_viewport().get_texture().get_image().save_png("%s/shot%d.png" % [dir, i])
+		i += 1
+	get_tree().quit()
 
 func show_title() -> void:
 	get_tree().paused = false

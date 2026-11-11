@@ -97,11 +97,10 @@ func _ready() -> void:
 	root.add_child(msg_l)
 
 	speed_l = _label(22, Color(0.8, 0.95, 1.0))
-	speed_l.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	speed_l.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	speed_l.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	speed_l.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
 	speed_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	speed_l.position.y = -14
+	speed_l.offset_top = -46
+	speed_l.offset_bottom = -10
 	root.add_child(speed_l)
 
 	reticle = Control.new()

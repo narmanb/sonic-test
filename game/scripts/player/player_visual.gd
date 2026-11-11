@@ -283,7 +283,7 @@ func _animate_body(dt: float, spd: float, grounded: bool, grind: bool) -> void:
 	var flap := sin(Time.get_ticks_msec() * 0.02) * 0.25
 	for i in scarf.size():
 		var droop := lerpf(1.1, 0.15, clampf(spd / 20.0, 0, 1))
-		scarf[i].rotation = Vector3(-droop * (0.6 if i == 0 else 0.35) + flap * 0.3 * i, flap * 0.2 * i, 0)
+		scarf[i].rotation = Vector3(droop * (0.9 if i == 0 else 0.3) + flap * 0.3 * i, flap * 0.25 * i, 0)
 
 func _update_trail(spd: float) -> void:
 	var active := spd > 26.0 or p.state == Player.St.HOMING or p.boosting

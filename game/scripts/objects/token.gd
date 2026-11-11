@@ -15,7 +15,7 @@ static func make(parent: Node, pos: Vector3, tid: String) -> Token:
 	return t
 
 func _ready() -> void:
-	setup_sphere(1.6)
+	setup_sphere(1.9)
 	gem = Node3D.new()
 	add_child(gem)
 	var s := SphereMesh.new()

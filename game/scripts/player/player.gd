@@ -70,6 +70,7 @@ var homing_t := 0.0
 var dead_t := 0.0
 var air_t := 0.0
 var safe_t := 0.0
+var wet_t := 0.0
 var can_cut := false
 var can_double := true
 var can_dash := true
@@ -245,7 +246,10 @@ func _ground(dt: float) -> void:
 	if rolling:
 		# rolling: no drive, low friction, full slope gravity, gentle steering
 		if wl > 0.0 and lock_t <= 0.0 and not steep:
-			dir = _rotate_toward(dir, wt, 1.3 * dt, n)
+			if dir.dot(wt) < -0.5:
+				spd = maxf(0.0, spd - 45.0 * dt)    # pull back to brake out of a roll
+			else:
+				dir = _rotate_toward(dir, wt, 1.6 * dt, n)
 		spd = maxf(0.0, spd - 2.2 * dt)
 	elif boosting:
 		if wl > 0.0 and lock_t <= 0.0:
@@ -685,7 +689,7 @@ func _try_rail() -> void:
 		if not r.world_aabb.has_point(foot):
 			continue
 		var c: Dictionary = r.closest(foot)
-		if c.dist < 1.3:
+		if c.dist < (1.5 if state == St.AIR else 1.2):
 			_attach_rail(r, c.offset)
 			return
 
@@ -717,7 +721,7 @@ func _grind(dt: float) -> void:
 	if boosting and absf(rail_speed) < BOOST_SPEED:
 		rail_speed = move_toward(rail_speed, s * BOOST_SPEED, 55.0 * dt)
 	elif absf(rail_speed) < 16.0:
-		rail_speed = move_toward(rail_speed, s * 16.0, 14.0 * dt)
+		rail_speed = move_toward(rail_speed, s * 16.0, 45.0 * dt)
 	rail_speed = clampf(rail_speed, -MAX_SPEED, MAX_SPEED)
 	rail_off += rail_speed * dt
 	var ended: bool = rail_off < 0.0 or rail_off > rail.length
@@ -747,7 +751,24 @@ func _common(dt: float) -> void:
 	if global_position.y < kill_y:
 		fall_out()
 		return
-	if state == St.GROUND and ground_normal.y > 0.85 and not (ground_body != null and ground_body.has_method("carry_velocity")):
+	# safety net: if anything ever pushes us beneath the terrain, pop back up
+	var wd = Game.world
+	if wd != null and wd.has_method("ground_y") and state != St.GRIND:
+		var gy: float = wd.ground_y(global_position.x, global_position.z)
+		if global_position.y < gy - 2.5:
+			global_position.y = gy + 1.0
+			velocity = Vector3.ZERO
+			reset_physics_interpolation()
+	# wading is fine for a moment, but nobody gets stranded at the foot of a sea cliff
+	if global_position.y < kill_y + 0.9:
+		wet_t += dt
+		if wet_t > 2.5:
+			wet_t = 0.0
+			fall_out()
+			return
+	else:
+		wet_t = 0.0
+	if state == St.GROUND and ground_normal.y > 0.85 and global_position.y > kill_y + 2.2 and not (ground_body != null and ground_body.has_method("carry_velocity")):
 		safe_t += dt
 		if safe_t > 0.4:
 			safe_t = 0.0
