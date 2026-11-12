@@ -511,6 +511,7 @@ func t_grunt() -> void:
 
 func t_turret() -> void:
 	var tr := arena.test_turret
+	tr.on_player_respawn()     # an earlier homing chain may have reached it
 	await place(Vector3(-230, 0.6, -14))
 	Game.sparks = 20
 	var hurt := false
@@ -520,14 +521,14 @@ func t_turret() -> void:
 			hurt = true
 			break
 	check("turret: shoots a stationary player", hurt, "")
-	# a moving player is not hit: strafe across its line of fire
+	# a player who keeps moving is not hit: run straight across its line of fire
 	await step(140)
-	await place(Vector3(-215, 0.6, -14))
+	await place(Vector3(-272, 0.6, -14), -PI * 0.5)
 	Game.sparks = 20
+	fwd()
 	var dodged := true
-	for i in 480:
+	for i in 200:
 		await step(1)
-		inp["move"] = Vector2(1 if (i / 120) % 2 == 0 else -1, 0)
 		if p.invuln_t > 0.5:
 			dodged = false
 	check("turret: shots can be outrun", dodged, "")

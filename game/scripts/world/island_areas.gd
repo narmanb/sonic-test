@@ -426,7 +426,6 @@ static func sky_garden(w: Island) -> void:
 	w.hoop_to(ha, hb)
 	w.hoop_to(hb, i3 + Vector3(0, 1.5, 3.0), 40.0)
 	w.sparks.add_line(ha.lerp(hb, 0.2), ha.lerp(hb, 0.8) + Vector3(0, 2, 0), 5)
-	Grunt.make(w, i3 + Vector3(2, 0, -2), 0.01)
 	# lanterns spiral up to the garden's crown
 	var chain: Array = [Vector3(312, 77, -280), Vector3(300, 81, -289), Vector3(288, 85, -295), Vector3(277, 89, -299)]
 	for cpos in chain:
