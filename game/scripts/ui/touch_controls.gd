@@ -94,7 +94,7 @@ func _input(event: InputEvent) -> void:
 			_up(event.index)
 	elif event is InputEventScreenDrag:
 		_drag(event.index, event.position, event.relative)
-	elif int(Game.settings["touch_mode"]) == 1:
+	elif int(Game.settings["touch_mode"]) == 1 and not DisplayServer.is_touchscreen_available():
 		# desktop testing: the mouse acts as a single finger
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
