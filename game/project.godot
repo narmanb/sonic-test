@@ -8,6 +8,7 @@ config/description="High-speed open-world 3D platformer prototype."
 run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
+config/quit_on_go_back=false
 
 [autoload]
 

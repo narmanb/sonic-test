@@ -46,7 +46,10 @@ func _shots(dir: String, args: Array) -> void:
 	var i := 0
 	for sp in spots:
 		if sp.size() >= 3 and Game.player != null:
-			Game.player.teleport(Vector3(sp[0], sp[1], sp[2]))
+			var y: float = sp[1]
+			if y <= 0.0 and Game.world.has_method("ground_y"):
+				y = Game.world.ground_y(sp[0], sp[2]) + 1.0 - y     # y<=0: metres above the ground
+			Game.player.teleport(Vector3(sp[0], y, sp[2]))
 			if sp.size() >= 4:
 				Game.camera.yaw = sp[3]
 			if sp.size() >= 5:

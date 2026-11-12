@@ -42,8 +42,15 @@ func homing_point() -> Vector3:
 func homing_hit(p: Player) -> void:
 	_struck(p)
 
+var dead_t := 0.0
+
 func _physics_process(dt: float) -> void:
 	if not alive:
+		# quietly return once the player has moved on, so the island stays lively
+		dead_t += dt
+		var pl = Game.player
+		if dead_t > 40.0 and pl != null and is_instance_valid(pl) and home.distance_to(pl.global_position) > 70.0:
+			on_player_respawn()
 		return
 	grace = maxf(0.0, grace - dt)
 	if flash_t > 0.0:
@@ -97,6 +104,7 @@ func damage(p: Player) -> void:
 
 func die(p: Player) -> void:
 	alive = false
+	dead_t = 0.0
 	homing_enabled = false
 	visible = false
 	Fx.burst(global_position, Color(1.0, 0.6, 0.2), 16, 9.0, 0.6, 0.0, 1.4)

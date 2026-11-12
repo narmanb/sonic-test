@@ -287,7 +287,7 @@ func _animate_body(dt: float, spd: float, grounded: bool, grind: bool) -> void:
 
 func _update_trail(spd: float) -> void:
 	var active := spd > 26.0 or p.state == Player.St.HOMING or p.boosting
-	var pos := rig.global_position
+	var pos := p.get_global_transform_interpolated().origin
 	if active:
 		trail_pts.push_front(pos)
 	elif trail_pts.size() > 0:

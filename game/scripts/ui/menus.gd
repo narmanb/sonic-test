@@ -14,6 +14,20 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	theme_res = _make_theme()
 
+func _notification(what: int) -> void:
+	# Android back button / gesture behaves like the pause button
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		if in_game:
+			if showing == "":
+				open_pause()
+			elif showing == "settings":
+				open_pause()
+			else:
+				resume()
+		elif showing == "settings":
+			Game.save_settings()
+			open_title(main)
+
 func _make_theme() -> Theme:
 	var t := Theme.new()
 	t.default_font_size = 24

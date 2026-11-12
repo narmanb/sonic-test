@@ -17,7 +17,7 @@ func _ready() -> void:
 	Controls.override = inp
 	var names: Array = ["run", "turn", "boost", "jump", "jump_momentum", "coyote", "buffer", "slopes", "bumps", "hills",
 			"loop", "spindash", "roll_downhill", "spring_homing_chain", "los", "rail", "rail_jump", "stomp",
-			"wall", "breakable", "hoops", "hurt"]
+			"wall", "breakable", "hoops", "hurt", "grunt", "turret", "bulwark"]
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--only="):
 			names = Array(a.trim_prefix("--only=").split(","))
@@ -470,3 +470,99 @@ func t_hurt() -> void:
 	p.teleport(Vector3(0, -70, 0))
 	await step(3)
 	check("recovery: falling out respawns", p.global_position.y > -5.0, "y=%.1f" % p.global_position.y)
+
+func _home_in(frames: int = 90) -> void:
+	inp["jump"] = true
+	for i in frames:
+		await step(1)
+		if p.state == Player.St.AIR and p.target != null:
+			inp["attack"] = not inp.get("attack", false)
+		else:
+			inp["attack"] = false
+	inp["jump"] = false
+	inp["attack"] = false
+
+func t_grunt() -> void:
+	var g := arena.test_grunt
+	await place(Vector3(-200, 0.6, -24))
+	Game.sparks = 0
+	Game.add_sparks(10)
+	await _home_in(40)
+	check("grunt: homing attack defeats it", not g.alive and Game.sparks > 10, "sparks %d" % Game.sparks)
+	g.on_player_respawn()
+	await place(Vector3(-200, 0.6, -30))
+	var hurt := false
+	for i in 400:
+		await step(1)
+		if p.invuln_t > 0.5:
+			hurt = true
+			break
+	check("grunt: telegraphs then rams an idle player", hurt and g.alive, "")
+	await step(150)
+	# spin dash straight through it
+	g.on_player_respawn()
+	await place(g.global_position + Vector3(0, 0, 18))
+	inp["spin"] = true
+	await step(30)
+	inp["spin"] = false
+	await step(40)
+	check("grunt: spin dash bowls it over", not g.alive, "")
+	g.on_player_respawn()
+
+func t_turret() -> void:
+	var tr := arena.test_turret
+	await place(Vector3(-230, 0.6, -14))
+	Game.sparks = 20
+	var hurt := false
+	for i in 500:
+		await step(1)
+		if p.invuln_t > 0.5:
+			hurt = true
+			break
+	check("turret: shoots a stationary player", hurt, "")
+	# a moving player is not hit: strafe across its line of fire
+	await step(140)
+	await place(Vector3(-215, 0.6, -14))
+	Game.sparks = 20
+	var dodged := true
+	for i in 480:
+		await step(1)
+		inp["move"] = Vector2(1 if (i / 120) % 2 == 0 else -1, 0)
+		if p.invuln_t > 0.5:
+			dodged = false
+	check("turret: shots can be outrun", dodged, "")
+	await place(Vector3(-230, 0.6, -26))
+	await _home_in(50)
+	check("turret: homing attack destroys it", not tr.alive, "")
+
+func t_bulwark() -> void:
+	var b := arena.test_bulwark
+	b.on_player_respawn()
+	await place(Vector3(-260, 0.6, -52), PI)
+	Game.sparks = 20
+	inp["jump"] = true
+	var thrown := false
+	for i in 40:
+		await step(1)
+		inp["attack"] = p.state == Player.St.AIR and p.target != null and not inp.get("attack", false)
+		if p.velocity.z < -8.0:
+			thrown = true
+	inp["jump"] = false
+	inp["attack"] = false
+	check("bulwark: shield deflects a frontal attack", b.alive and b.hp == 2 and thrown, "hp %d" % b.hp)
+	await step(60)
+	# stomp beside it to break the shield, then strike twice
+	p.teleport(b.global_position + Vector3(3.5, 9, 0))
+	await step(2)
+	await tap("stomp", 2)
+	await step(25)
+	check("bulwark: stomp shockwave stuns it", b.stun > 3.0 and not b.shield.visible, "")
+	for k in 2:
+		await _home_in(45)
+		await step(20)
+	check("bulwark: falls once the shield is down", not b.alive, "hp %d" % b.hp)
+	# or simply get behind it
+	b.on_player_respawn()
+	await place(b.global_position + Vector3(0, -1.0, 14))
+	await _home_in(40)
+	check("bulwark: vulnerable from behind", b.hp < 2, "hp %d" % b.hp)

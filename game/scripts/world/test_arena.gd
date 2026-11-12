@@ -16,6 +16,9 @@ var test_gate: Gate
 var test_wall: Breakable
 var test_rail: Rail
 var los_orb: Orb
+var test_grunt: Grunt
+var test_turret: Turret
+var test_bulwark: Bulwark
 
 func _build() -> void:
 	is_test = true
@@ -93,6 +96,10 @@ func _build() -> void:
 	test_switch.pressed_changed.connect(func(on): if on: test_gate.open())
 	MovingPlatform.make(self, Vector3(20, 1, 30), Vector3(20, 8, 50), Vector3(6, 0.6, 6), m_dark, 6.0)
 	Checkpoint.make(self, Vector3(0, 0, -8), "arena_start")
+	# --- enemy lanes
+	test_grunt = Grunt.make(self, Vector3(-200, 0, -40))
+	test_turret = Turret.make(self, Vector3(-230, 0, -40))
+	test_bulwark = Bulwark.make(self, Vector3(-260, 0, -40))
 
 func _ramp(pos: Vector3, deg: float, run: float, width: float, top: float) -> void:
 	var h := run * tan(deg_to_rad(deg))

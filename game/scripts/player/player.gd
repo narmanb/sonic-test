@@ -568,7 +568,8 @@ func _find_target() -> Node3D:
 			continue
 		var flat := Vector3(to.x, 0, to.z)
 		var dot := flat.normalized().dot(aim) if flat.length() > 1.5 else 1.0
-		if dot < 0.2:
+		# nearby targets are fair game even when not quite faced
+		if dot < (-0.35 if d < 9.0 else 0.2):
 			continue
 		var score := d * (1.7 - dot)
 		if score < best_score:
